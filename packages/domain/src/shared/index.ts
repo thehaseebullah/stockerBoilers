@@ -5,3 +5,5 @@ export * from "./clock";
 export * from "./errors";
 export * from "./events";
 export * from "./command";
+export * from "./permissions";
+export * from "./runCommand";

@@ -2,7 +2,9 @@ import { z } from "zod";
 import { Role } from "@stoker/contracts";
 import { DomainEvent } from "./events";
 
-export type CommandContext<TTx = unknown> = {
+import { DbTransaction } from "@stoker/db";
+
+export type CommandContext<TTx = DbTransaction> = {
   actor: {
     userId: string;
     roles: Role[];
@@ -17,7 +19,7 @@ export type CommandContext<TTx = unknown> = {
   tx: TTx;
 };
 
-export interface CommandHandler<I, O, TTx = unknown> {
+export interface CommandHandler<I, O, TTx = DbTransaction> {
   name: string;
   input: z.ZodType<I>;
   authorize(ctx: CommandContext<TTx>, input: I): Promise<void>;

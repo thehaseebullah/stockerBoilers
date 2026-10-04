@@ -1,15 +1,16 @@
 # Progress
 
 ## Current milestone
-M1 — Platform core (next)
+M2 — Design system (next)
 
 ## Done
 - [x] M0 Scaffold — pnpm + Turborepo monorepo layout, Next.js 15, TS strict with noUncheckedIndexedAccess, Tailwind v4, ESLint v9 with boundaries, Vitest, Playwright, infra/docker-compose.yml (Postgres 16, MinIO, Mailpit), CI workflow — 2026-10-05
+- [x] M1 Platform core — Drizzle schema & client, runCommand() transaction runner, transactional outbox (domain_events), processed_commands idempotency, audit_log, RBAC permissions, site scoping assertions & queries, live/sandbox seeds, integration test suite — 2026-10-05
 
 ## In progress
 
 ## Next
-- M1 Platform core (Drizzle setup + migrations, domain/shared, runCommand(), domain_events + outbox + processed_commands, audit log, Better Auth, roles/permissions, site scoping, RLS, seed + sandbox seed)
+- M2 Design system (`packages/ui` tokens from DESIGN §14.1, Day/Night shift themes, AppShell, Sidebar, TopBar, PageHeader, Tabs, Panel, Button, MoneyInput, StatusPill, LifecycleStepper, DataTable, EmptyState, Toast, Dialog, CommandPalette, Gauge 240° dial)
 
 ## Known shortcuts (ponytail:)
 | Where | Shortcut | Upgrade path | Req |
