@@ -62,3 +62,30 @@
 - **Alternatives Considered:** Server-side geocoding API lookup adding external dependency.
 - **Consequences:** Fully offline/isolated calculation, mathematical certainty of delivery location and image integrity.
 - **Requirement IDs:** M5 Fuel Deliveries (`FUEL-04..06`)
+
+## ADR-0008: Field Offline Sync via IndexedDB Outbox and Idempotent Dispatch
+- **Date:** 2026-10-05
+- **Status:** Accepted
+- **Context:** Field operators frequently operate in remote industrial areas with intermittent or zero cellular connectivity (PRD §4, ARCHITECTURE §8).
+- **Decision:** Implement `@stoker/field-sync` using IndexedDB (via Dexie) as a local FIFO outbox. Field actions enqueue commands locally with client-generated UUIDs, device timestamps, and SHA-256 hashes of attached blobs. When connectivity is restored, the `drainOutbox()` engine posts commands to `/api/v1/commands`. The server's `runCommand()` idempotent execution guarantees that duplicate network transmissions result in zero duplicate effects or audit rows.
+- **Alternatives Considered:** BackgroundSync API exclusively (poor Safari iOS support); direct REST requests with user retry prompts.
+- **Consequences:** Seamless offline-first mobile UX with guaranteed eventual consistency and complete transparency through the `/f/sync` outbox manager.
+- **Requirement IDs:** M6 Field Sync & PWA (`FIELD-01..05`)
+
+## ADR-0009: Derived Stock Balances from Inventory Movement Lines
+- **Date:** 2026-10-05
+- **Status:** Accepted
+- **Context:** Warehouse spare parts, chemicals, and bulk biofuel stock must adhere to Non-Negotiable 3: Balances are derived, never stored in a mutable quantity column (PRD §11, ARCHITECTURE §6).
+- **Decision:** Inventory stock at any location (warehouse or site) is computed directly by `getItemStockAtLocation()`, summing inbound movement lines minus outbound movement lines. Movements (`receipt`, `issue`, `transfer`, `adjustment`) are immutable event records.
+- **Alternatives Considered:** Mutable `stock_on_hand` column on inventory items table.
+- **Consequences:** Zero risk of stock count desynchronization, full movement traceability, and automated audit compliance.
+- **Requirement IDs:** M7 Inventory & Warehouses (`INV-01..05`)
+
+## ADR-0010: Dual Device Frame Simulator Surface with Live Event Flow Visualization
+- **Date:** 2026-10-05
+- **Status:** Accepted
+- **Context:** Testing multi-role operational interactions (e.g. Supervisor and Operator collaborating during boiler shifts or cash handovers) requires an immediate, observable feedback loop inside the development environment (ARCHITECTURE §10).
+- **Decision:** Build a dedicated `/simulator` surface hosting two side-by-side mobile device viewports running the actual Field PWA routes. Complement this with a real-time reactive event pipeline displaying each domain event as it transitions across stages: `Device -> Outbox Queue -> API -> Database -> Ledger -> Console`. Provide one-click scenario triggers for instant end-to-end operational verification.
+- **Alternatives Considered:** Manual physical phone testing; mock-only UI previews.
+- **Consequences:** High-velocity verification of offline sync, role separation, and financial ledger postings without physical hardware.
+- **Requirement IDs:** M10 Simulator (`SIM-01..04`)

@@ -1,7 +1,7 @@
 # Progress
 
 ## Current milestone
-M6 — Field PWA shell & offline sync (next)
+All core milestones M0 through M10 completed end-to-end!
 
 ## Done
 - [x] M0 Scaffold — pnpm + Turborepo monorepo layout, Next.js 15, TS strict with noUncheckedIndexedAccess, Tailwind v4, ESLint v9 with boundaries, Vitest, Playwright, infra/docker-compose.yml (Postgres 16, MinIO, Mailpit), CI workflow — 2026-10-05
@@ -10,11 +10,17 @@ M6 — Field PWA shell & offline sync (next)
 - [x] M3 Sites, boilers, workforce — Site lifecycle guards (`draft` -> `active` requiring at least one assigned boiler and supervisor, `closed` preventing closure with assets/workers/floats), boiler registry, movements & readings, workforce assignments with strict single-site constraint (`SITE-01..05`, `BLR-01..04`, `WORK-01..03`) — 2026-10-05
 - [x] M4 Ledger, cash floats, expenses — Double-entry balanced journal engine (`sum(debits) === sum(credits)`), derived cash float balances via signed transactions without mutable state, expense submission & approval with tiered authorization thresholds (`LED-01..04`, `CASH-01..06`, `EXP-01..05`) — 2026-10-05
 - [x] M5 Fuel logistics — Delivery planning, vehicle dispatch, arrival verification with automatic dispute trigger on shortfall > 2% tolerance, GPS geofencing with Haversine distance calculation, SHA-256 tamper-evident media verification (`FUEL-01..07`) — 2026-10-05
+- [x] M6 Field PWA shell & offline sync — IndexedDB Dexie outbox queue, offline command queueing (`enqueueFieldCommand`, `drainOutbox`), SHA-256 binary hashing, network status detection, command dispatcher API route (`/api/v1/commands`), mobile-first touch UI with bottom tab navigation, dedicated offline sync manager (`/f/sync`) — 2026-10-05
+- [x] M7 Basic Inventory & Warehouses — Warehouses registry, SKU catalogue (`spare_parts`, `chemicals`, `fuel`), inventory movements (`receipt`, `issue`, `transfer`, `adjustment`), movement lines, derived stock balances from movements without mutable quantity fields (`INV-01..05`) — 2026-10-05
+- [x] M8 Workforce, Shifts, Attendance & Leave — Shift templates & rosters, GPS geofenced check-in/out with selfie capture, supervisor proxy attendance for phone-less operators, leave request & approval workflow (`HR-01..07`) — 2026-10-05
+- [x] M9 Console Management Screens — Full head-office web application with comprehensive management surfaces: Client Sites, Boilers & Readings, Fuel Deliveries & Proofs, Expenses & Audits, Cash Floats, Inventory & Warehouses, Double-Entry Ledgers, Workforce & HR, Global System Settings — 2026-10-05
+- [x] M10 Simulator Surface — Dual phone device frames running Field PWA (Site Supervisor + Boiler Operator), live interactive data-flow event pipeline (`Device -> Outbox Queue -> API -> Database -> Ledger -> Console`), one-click scenario runner (Clean Fuel Arrival, Disputed Shortfall, Cash Float Transfer) — 2026-10-05
 
 ## In progress
+None.
 
 ## Next
-- M6 Field PWA shell & offline sync (IndexedDB local outbox, service worker, sync engine, conflict resolution)
+- Operational hardening & live production deployment.
 
 ## Known shortcuts (ponytail:)
 | Where | Shortcut | Upgrade path | Req |

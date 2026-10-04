@@ -285,6 +285,87 @@ export async function createTestDb() {
       user_agent text,
       at timestamptz NOT NULL DEFAULT now()
     );
+
+    CREATE TABLE IF NOT EXISTS warehouses (
+      id uuid PRIMARY KEY,
+      org_id uuid NOT NULL REFERENCES organizations(id),
+      name text NOT NULL,
+      address text,
+      manager_id uuid REFERENCES employees(id),
+      capacity_notes text,
+      created_at timestamptz NOT NULL DEFAULT now()
+    );
+
+    CREATE TABLE IF NOT EXISTS inventory_items (
+      id uuid PRIMARY KEY,
+      org_id uuid NOT NULL REFERENCES organizations(id),
+      sku text NOT NULL,
+      name text NOT NULL,
+      category text NOT NULL,
+      uom text NOT NULL DEFAULT 'units',
+      reorder_level numeric(12,2) DEFAULT 0,
+      created_at timestamptz NOT NULL DEFAULT now()
+    );
+
+    CREATE TABLE IF NOT EXISTS inventory_movements (
+      id uuid PRIMARY KEY,
+      org_id uuid NOT NULL REFERENCES organizations(id),
+      movement_no text NOT NULL,
+      kind text NOT NULL,
+      from_location_kind text,
+      from_location_id uuid,
+      to_location_kind text NOT NULL,
+      to_location_id uuid NOT NULL,
+      occurred_at timestamptz NOT NULL DEFAULT now(),
+      actor_id uuid NOT NULL,
+      note text
+    );
+
+    CREATE TABLE IF NOT EXISTS inventory_movement_lines (
+      id uuid PRIMARY KEY,
+      movement_id uuid NOT NULL REFERENCES inventory_movements(id),
+      item_id uuid NOT NULL REFERENCES inventory_items(id),
+      quantity numeric(12,3) NOT NULL,
+      unit_cost_minor bigint
+    );
+
+    CREATE TABLE IF NOT EXISTS shifts (
+      id uuid PRIMARY KEY,
+      org_id uuid NOT NULL REFERENCES organizations(id),
+      site_id uuid NOT NULL REFERENCES sites(id),
+      name text NOT NULL,
+      starts_at text NOT NULL,
+      ends_at text NOT NULL,
+      required_operators int NOT NULL DEFAULT 2
+    );
+
+    CREATE TABLE IF NOT EXISTS attendance_records (
+      id uuid PRIMARY KEY,
+      org_id uuid NOT NULL REFERENCES organizations(id),
+      site_id uuid NOT NULL REFERENCES sites(id),
+      employee_id uuid NOT NULL REFERENCES employees(id),
+      shift_id uuid REFERENCES shifts(id),
+      kind text NOT NULL,
+      recorded_at timestamptz NOT NULL DEFAULT now(),
+      lat double precision,
+      lng double precision,
+      distance_from_site_m double precision,
+      inside_geofence boolean DEFAULT true,
+      selfie_url text,
+      verified_by_supervisor_id uuid
+    );
+
+    CREATE TABLE IF NOT EXISTS leave_requests (
+      id uuid PRIMARY KEY,
+      org_id uuid NOT NULL REFERENCES organizations(id),
+      employee_id uuid NOT NULL REFERENCES employees(id),
+      leave_type text NOT NULL,
+      starts_on text NOT NULL,
+      ends_on text NOT NULL,
+      reason text,
+      status text NOT NULL DEFAULT 'pending',
+      approved_by uuid
+    );
   `);
 
   return {

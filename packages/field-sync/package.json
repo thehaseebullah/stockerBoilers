@@ -10,7 +10,8 @@
   },
   "dependencies": {
     "@stoker/contracts": "workspace:*",
-    "dexie": "^4.0.11"
+    "dexie": "^4.0.11",
+    "uuidv7": "^1.0.2"
   },
   "devDependencies": {
     "@stoker/config": "workspace:*",

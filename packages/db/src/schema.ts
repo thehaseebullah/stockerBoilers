@@ -361,3 +361,105 @@ export const auditLog = pgTable("audit_log", {
   userAgent: text("user_agent"),
   at: timestamp("at", { withTimezone: true }).notNull().defaultNow(),
 });
+
+/**
+ * Warehouses - PRD §7.6, ARCHITECTURE §7.3
+ */
+export const warehouses = pgTable("warehouses", {
+  id: uuid("id").primaryKey(),
+  orgId: uuid("org_id").notNull().references(() => organizations.id),
+  name: text("name").notNull(),
+  address: text("address"),
+  managerId: uuid("manager_id").references(() => employees.id),
+  capacityNotes: text("capacity_notes"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+/**
+ * Inventory items catalogue - PRD §7.6
+ */
+export const inventoryItems = pgTable("inventory_items", {
+  id: uuid("id").primaryKey(),
+  orgId: uuid("org_id").notNull().references(() => organizations.id),
+  sku: text("sku").notNull(),
+  name: text("name").notNull(),
+  category: text("category").notNull(), // 'spare_parts','consumables','chemicals','fuel','tools'
+  uom: text("uom").notNull().default("units"),
+  reorderLevel: numeric("reorder_level", { precision: 12, scale: 2 }).default("0"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+/**
+ * Inventory movements - PRD §7.6 (INV-04..05)
+ */
+export const inventoryMovements = pgTable("inventory_movements", {
+  id: uuid("id").primaryKey(),
+  orgId: uuid("org_id").notNull().references(() => organizations.id),
+  movementNo: text("movement_no").notNull(),
+  kind: text("kind").notNull(), // 'receipt','issue_to_site','return_from_site','transfer','adjustment'
+  fromLocationKind: text("from_location_kind"), // 'supplier','warehouse','site'
+  fromLocationId: uuid("from_location_id"),
+  toLocationKind: text("to_location_kind").notNull(), // 'warehouse','site'
+  toLocationId: uuid("to_location_id").notNull(),
+  occurredAt: timestamp("occurred_at", { withTimezone: true }).notNull().defaultNow(),
+  actorId: uuid("actor_id").notNull(),
+  note: text("note"),
+});
+
+/**
+ * Inventory movement lines - PRD §7.6
+ */
+export const inventoryMovementLines = pgTable("inventory_movement_lines", {
+  id: uuid("id").primaryKey(),
+  movementId: uuid("movement_id").notNull().references(() => inventoryMovements.id),
+  itemId: uuid("item_id").notNull().references(() => inventoryItems.id),
+  quantity: numeric("quantity", { precision: 12, scale: 3 }).notNull(),
+  unitCostMinor: bigint("unit_cost_minor", { mode: "bigint" }),
+});
+
+/**
+ * Shifts and roster templates - PRD §7.8 (HR-04)
+ */
+export const shifts = pgTable("shifts", {
+  id: uuid("id").primaryKey(),
+  orgId: uuid("org_id").notNull().references(() => organizations.id),
+  siteId: uuid("site_id").notNull().references(() => sites.id),
+  name: text("name").notNull(), // 'Day Shift', 'Night Shift'
+  startsAt: text("starts_at").notNull(), // '08:00'
+  endsAt: text("ends_at").notNull(), // '20:00'
+  requiredOperators: integer("required_operators").notNull().default(2),
+});
+
+/**
+ * Attendance records - PRD §7.8 (HR-05)
+ */
+export const attendanceRecords = pgTable("attendance_records", {
+  id: uuid("id").primaryKey(),
+  orgId: uuid("org_id").notNull().references(() => organizations.id),
+  siteId: uuid("site_id").notNull().references(() => sites.id),
+  employeeId: uuid("employee_id").notNull().references(() => employees.id),
+  shiftId: uuid("shift_id").references(() => shifts.id),
+  kind: text("kind").notNull(), // 'check_in', 'check_out'
+  recordedAt: timestamp("recorded_at", { withTimezone: true }).notNull().defaultNow(),
+  lat: doublePrecision("lat"),
+  lng: doublePrecision("lng"),
+  distanceFromSiteM: doublePrecision("distance_from_site_m"),
+  insideGeofence: boolean("inside_geofence").default(true),
+  selfieUrl: text("selfie_url"),
+  verifiedBySupervisorId: uuid("verified_by_supervisor_id"),
+});
+
+/**
+ * Leave requests - PRD §7.8 (HR-07)
+ */
+export const leaveRequests = pgTable("leave_requests", {
+  id: uuid("id").primaryKey(),
+  orgId: uuid("org_id").notNull().references(() => organizations.id),
+  employeeId: uuid("employee_id").notNull().references(() => employees.id),
+  leaveType: text("leave_type").notNull(), // 'annual', 'sick', 'emergency'
+  startsOn: text("starts_on").notNull(),
+  endsOn: text("ends_on").notNull(),
+  reason: text("reason"),
+  status: text("status").notNull().default("pending"), // 'pending', 'approved', 'rejected'
+  approvedBy: uuid("approved_by"),
+});

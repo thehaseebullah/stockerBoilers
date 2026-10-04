@@ -4,7 +4,8 @@ import { cn } from "./utils";
 export type PillVariant = "ok" | "warn" | "danger" | "fuel" | "info" | "neutral";
 
 export interface StatusPillProps {
-  label: string;
+  label?: string;
+  status?: string;
   variant?: PillVariant;
   className?: string;
   dot?: boolean;
@@ -12,10 +13,30 @@ export interface StatusPillProps {
 
 export const StatusPill: React.FC<StatusPillProps> = ({
   label,
-  variant = "neutral",
+  status,
+  variant,
   className,
   dot = true,
 }) => {
+  const displayLabel = label ?? status ?? "neutral";
+  
+  // Auto-resolve variant if not explicitly provided
+  let resolvedVariant = variant;
+  if (!resolvedVariant && (status || label)) {
+    const s = (status ?? label ?? "").toLowerCase();
+    if (["active", "approved", "arrived", "installed", "ok"].includes(s)) {
+      resolvedVariant = "ok";
+    } else if (["disputed", "rejected", "closed", "danger"].includes(s)) {
+      resolvedVariant = "danger";
+    } else if (["dispatched", "in_transit", "pending", "submitted", "warn", "warning", "settling"].includes(s)) {
+      resolvedVariant = "warn";
+    } else if (["fuel"].includes(s)) {
+      resolvedVariant = "fuel";
+    } else {
+      resolvedVariant = "neutral";
+    }
+  }
+  if (!resolvedVariant) resolvedVariant = "neutral";
   const variantStyles: Record<PillVariant, { pill: string; dot: string }> = {
     ok: {
       pill: "bg-[var(--ok-soft)] text-[var(--ok)] border-[var(--ok)]/20",
@@ -43,7 +64,7 @@ export const StatusPill: React.FC<StatusPillProps> = ({
     },
   };
 
-  const style = variantStyles[variant];
+  const style = variantStyles[resolvedVariant];
 
   return (
     <span
@@ -54,7 +75,7 @@ export const StatusPill: React.FC<StatusPillProps> = ({
       )}
     >
       {dot ? <span className={cn("w-1.5 h-1.5 rounded-full", style.dot)} /> : null}
-      <span>{label.replace(/_/g, " ")}</span>
+      <span>{displayLabel.replace(/_/g, " ")}</span>
     </span>
   );
 };

@@ -6,3 +6,5 @@ export * from "./ledger/journal";
 export * from "./cash/cashCommands";
 export * from "./expenses/expenseCommands";
 export * from "./fuel/fuelCommands";
+export * from "./inventory/inventoryCommands";
+export * from "./hr/hrCommands";

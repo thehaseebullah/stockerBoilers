@@ -2,8 +2,10 @@ import * as React from "react";
 import { cn } from "./utils";
 
 export interface GaugeZone {
-  from: number;
-  to: number;
+  from?: number;
+  to?: number;
+  min?: number;
+  max?: number;
   color: string; // CSS variable or color
 }
 
@@ -88,8 +90,10 @@ export const Gauge: React.FC<GaugeProps> = ({
 
         {/* Zones */}
         {zones.map((zone, i) => {
-          const zoneStartPct = (Math.max(zone.from, min) - min) / (max - min || 1);
-          const zoneEndPct = (Math.min(zone.to, max) - min) / (max - min || 1);
+          const fromVal = zone.from ?? zone.min ?? min;
+          const toVal = zone.to ?? zone.max ?? max;
+          const zoneStartPct = (Math.max(fromVal, min) - min) / (max - min || 1);
+          const zoneEndPct = (Math.min(toVal, max) - min) / (max - min || 1);
           const zoneStartAngle = startAngle + zoneStartPct * totalSweep;
           const zoneEndAngle = startAngle + zoneEndPct * totalSweep;
 
