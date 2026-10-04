@@ -1,0 +1,22 @@
+{
+  "extends": "./packages/config/typescript/base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@stoker/contracts": ["./packages/contracts/src"],
+      "@stoker/contracts/*": ["./packages/contracts/src/*"],
+      "@stoker/domain": ["./packages/domain/src"],
+      "@stoker/domain/*": ["./packages/domain/src/*"],
+      "@stoker/db": ["./packages/db/src"],
+      "@stoker/db/*": ["./packages/db/src/*"],
+      "@stoker/ui": ["./packages/ui/src"],
+      "@stoker/ui/*": ["./packages/ui/src/*"],
+      "@stoker/field-sync": ["./packages/field-sync/src"],
+      "@stoker/field-sync/*": ["./packages/field-sync/src/*"],
+      "@stoker/simulator": ["./packages/simulator/src"],
+      "@stoker/simulator/*": ["./packages/simulator/src/*"]
+    }
+  },
+  "include": ["**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules", "dist", ".next"]
+}

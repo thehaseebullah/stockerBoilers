@@ -1,0 +1,8 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+  - "packages/config/*"
+
+allowBuilds:
+  esbuild: true
+  sharp: true
