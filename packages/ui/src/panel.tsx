@@ -18,7 +18,7 @@ export const Panel: React.FC<PanelProps> = ({
   return (
     <div
       className={cn(
-        "bg-[var(--surface)] border border-[var(--line)] rounded-[var(--radius-panel)] shadow-sm overflow-hidden",
+        "bg-[var(--surface)] border border-[var(--line)] rounded-[var(--radius-panel)] shadow-xs hover:shadow-md transition-all duration-200 overflow-hidden",
         className
       )}
       {...props}

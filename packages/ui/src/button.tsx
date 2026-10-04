@@ -13,11 +13,11 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       "inline-flex items-center justify-center font-medium rounded-[var(--radius-control)] transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--focus)] focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none active:scale-[0.98]";
 
     const variantStyles = {
-      primary: "bg-[var(--primary)] text-[var(--ink-inverse)] hover:bg-[var(--primary-hover)]",
-      secondary: "bg-[var(--primary-soft)] text-[var(--primary)] hover:bg-[var(--primary-hover)] hover:text-[var(--ink-inverse)]",
-      outline: "border border-[var(--line-strong)] bg-[var(--surface)] text-[var(--ink)] hover:bg-[var(--surface-sunk)]",
-      danger: "bg-[var(--danger)] text-white hover:opacity-90",
-      ghost: "text-[var(--ink)] hover:bg-[var(--surface-sunk)]",
+      primary: "bg-gradient-to-r from-[var(--primary)] to-sky-500 text-white shadow-[0_0_15px_-3px_rgba(56,189,248,0.4)] hover:brightness-110 border border-sky-400/30",
+      secondary: "bg-[var(--primary-soft)] text-[var(--primary)] border border-[var(--primary)]/30 hover:bg-[var(--primary)] hover:text-white",
+      outline: "border border-[var(--line-strong)] bg-[var(--surface)] text-[var(--ink)] hover:bg-[var(--surface-sunk)] hover:border-[var(--primary)]/50",
+      danger: "bg-gradient-to-r from-[var(--danger)] to-rose-600 text-white shadow-[0_0_15px_-3px_rgba(251,113,133,0.4)] hover:brightness-110 border border-rose-400/30",
+      ghost: "text-[var(--ink)] hover:bg-[var(--surface-sunk)] hover:text-[var(--primary)]",
     };
 
     const sizeStyles = {
