@@ -463,3 +463,137 @@ export const leaveRequests = pgTable("leave_requests", {
   status: text("status").notNull().default("pending"), // 'pending', 'approved', 'rejected'
   approvedBy: uuid("approved_by"),
 });
+
+/**
+ * Boiler maintenance - PRD §7.2 (BLR-05)
+ */
+export const boilerMaintenance = pgTable("boiler_maintenance", {
+  id: uuid("id").primaryKey(),
+  orgId: uuid("org_id").notNull().references(() => organizations.id),
+  boilerId: uuid("boiler_id").notNull().references(() => boilers.id),
+  title: text("title").notNull(),
+  maintenanceType: text("maintenance_type").notNull().default("routine"), // 'routine','repair','preventative','overhaul'
+  status: text("status").notNull().default("scheduled"), // 'scheduled','in_progress','completed','cancelled'
+  scheduledDate: text("scheduled_date").notNull(),
+  completedAt: timestamp("completed_at", { withTimezone: true }),
+  runningHoursAtService: numeric("running_hours_at_service", { precision: 12, scale: 1 }),
+  technician: text("technician"),
+  notes: text("notes"),
+  costMinor: bigint("cost_minor", { mode: "bigint" }).default(0n),
+  partsUsed: jsonb("parts_used"), // [{ itemId, itemName, qty, unitCostMinor }]
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+/**
+ * Boiler certificates & inspections - PRD §7.2 (BLR-06)
+ */
+export const boilerCertificates = pgTable("boiler_certificates", {
+  id: uuid("id").primaryKey(),
+  orgId: uuid("org_id").notNull().references(() => organizations.id),
+  boilerId: uuid("boiler_id").notNull().references(() => boilers.id),
+  certificateType: text("certificate_type").notNull(), // 'pressure_vessel','emissions','safety_inspection','insurance'
+  certificateNumber: text("certificate_number").notNull(),
+  issuedBy: text("issued_by").notNull(),
+  issuedAt: text("issued_at").notNull(),
+  expiresAt: text("expires_at").notNull(),
+  documentUrl: text("document_url"),
+  status: text("status").notNull().default("valid"), // 'valid','expiring_soon','expired'
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+/**
+ * Float top-up requests - PRD §7.4 (CASH-08)
+ */
+export const floatTopUpRequests = pgTable("float_top_up_requests", {
+  id: uuid("id").primaryKey(),
+  orgId: uuid("org_id").notNull().references(() => organizations.id),
+  floatId: uuid("float_id").notNull().references(() => cashFloats.id),
+  requestedBy: uuid("requested_by").notNull().references(() => employees.id),
+  amountMinor: bigint("amount_minor", { mode: "bigint" }).notNull(),
+  currency: text("currency").notNull().default("USD"),
+  reason: text("reason").notNull(),
+  status: text("status").notNull().default("pending"), // 'pending','approved','rejected'
+  requestedAt: timestamp("requested_at", { withTimezone: true }).notNull().defaultNow(),
+  reviewedBy: uuid("reviewed_by"),
+  reviewedAt: timestamp("reviewed_at", { withTimezone: true }),
+});
+
+/**
+ * Financial periods locking - PRD §7.7 (LED-06)
+ */
+export const financialPeriods = pgTable("financial_periods", {
+  id: uuid("id").primaryKey(),
+  orgId: uuid("org_id").notNull().references(() => organizations.id),
+  periodName: text("period_name").notNull(), // e.g. '2026-10'
+  startsOn: text("starts_on").notNull(),
+  endsOn: text("ends_on").notNull(),
+  isLocked: boolean("is_locked").notNull().default(false),
+  lockedBy: uuid("locked_by"),
+  lockedAt: timestamp("locked_at", { withTimezone: true }),
+});
+
+/**
+ * Payroll runs & summaries - PRD §7.8 (HR-09)
+ */
+export const payrollRuns = pgTable("payroll_runs", {
+  id: uuid("id").primaryKey(),
+  orgId: uuid("org_id").notNull().references(() => organizations.id),
+  periodMonth: text("period_month").notNull(), // e.g. '2026-10'
+  status: text("status").notNull().default("draft"), // 'draft','approved','posted'
+  totalGrossMinor: bigint("total_gross_minor", { mode: "bigint" }).notNull().default(0n),
+  totalDeductionsMinor: bigint("total_deductions_minor", { mode: "bigint" }).notNull().default(0n),
+  totalNetMinor: bigint("total_net_minor", { mode: "bigint" }).notNull().default(0n),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  approvedBy: uuid("approved_by"),
+});
+
+/**
+ * Payroll individual inputs & payslip lines - PRD §7.8 (HR-09)
+ */
+export const payrollInputs = pgTable("payroll_inputs", {
+  id: uuid("id").primaryKey(),
+  payrollRunId: uuid("payroll_run_id").notNull().references(() => payrollRuns.id),
+  employeeId: uuid("employee_id").notNull().references(() => employees.id),
+  daysPresent: integer("days_present").notNull().default(0),
+  overtimeHours: numeric("overtime_hours", { precision: 6, scale: 2 }).notNull().default("0"),
+  leaveDays: integer("leave_days").notNull().default(0),
+  baseSalaryMinor: bigint("base_salary_minor", { mode: "bigint" }).notNull().default(0n),
+  overtimePayMinor: bigint("overtime_pay_minor", { mode: "bigint" }).notNull().default(0n),
+  advancesDeductedMinor: bigint("advances_deducted_minor", { mode: "bigint" }).notNull().default(0n),
+  reimbursementsMinor: bigint("reimbursements_minor", { mode: "bigint" }).notNull().default(0n),
+  netPayMinor: bigint("net_pay_minor", { mode: "bigint" }).notNull().default(0n),
+});
+
+/**
+ * Client contracts and Invoices - PRD §7.1 (SITE-08, Phase 3 Client billing)
+ */
+export const clientInvoices = pgTable("client_invoices", {
+  id: uuid("id").primaryKey(),
+  orgId: uuid("org_id").notNull().references(() => organizations.id),
+  siteId: uuid("site_id").notNull().references(() => sites.id),
+  invoiceNo: text("invoice_no").notNull(),
+  periodStart: text("period_start").notNull(),
+  periodEnd: text("period_end").notNull(),
+  billingModel: text("billing_model").notNull().default("flat_monthly"), // 'flat_monthly','per_steam_ton','per_running_hour'
+  subtotalMinor: bigint("subtotal_minor", { mode: "bigint" }).notNull().default(0n),
+  taxMinor: bigint("tax_minor", { mode: "bigint" }).notNull().default(0n),
+  totalMinor: bigint("total_minor", { mode: "bigint" }).notNull().default(0n),
+  currency: text("currency").notNull().default("USD"),
+  status: text("status").notNull().default("draft"), // 'draft','issued','paid','overdue'
+  dueDate: text("due_date").notNull(),
+  issuedAt: timestamp("issued_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+/**
+ * Boiler IoT Telemetry stream - Phase 3 IoT sensor integration
+ */
+export const boilerTelemetry = pgTable("boiler_telemetry", {
+  id: uuid("id").primaryKey(),
+  boilerId: uuid("boiler_id").notNull().references(() => boilers.id),
+  timestamp: timestamp("timestamp", { withTimezone: true }).notNull().defaultNow(),
+  steamPressureBar: numeric("steam_pressure_bar", { precision: 6, scale: 2 }).notNull(),
+  flueGasTempC: numeric("flue_gas_temp_c", { precision: 6, scale: 2 }).notNull(),
+  waterLevelPct: numeric("water_level_pct", { precision: 5, scale: 2 }).notNull(),
+  fuelFeedKgH: numeric("fuel_feed_kg_h", { precision: 8, scale: 2 }).notNull(),
+  vibrationMmS: numeric("vibration_mm_s", { precision: 6, scale: 2 }).notNull(),
+});

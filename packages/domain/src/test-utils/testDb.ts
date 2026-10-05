@@ -366,6 +366,116 @@ export async function createTestDb() {
       status text NOT NULL DEFAULT 'pending',
       approved_by uuid
     );
+
+    CREATE TABLE IF NOT EXISTS boiler_maintenance (
+      id uuid PRIMARY KEY,
+      org_id uuid NOT NULL REFERENCES organizations(id),
+      boiler_id uuid NOT NULL REFERENCES boilers(id),
+      title text NOT NULL,
+      maintenance_type text NOT NULL DEFAULT 'routine',
+      status text NOT NULL DEFAULT 'scheduled',
+      scheduled_date text NOT NULL,
+      completed_at timestamptz,
+      running_hours_at_service numeric(12,1),
+      technician text,
+      notes text,
+      cost_minor bigint DEFAULT 0,
+      parts_used jsonb,
+      created_at timestamptz NOT NULL DEFAULT now()
+    );
+
+    CREATE TABLE IF NOT EXISTS boiler_certificates (
+      id uuid PRIMARY KEY,
+      org_id uuid NOT NULL REFERENCES organizations(id),
+      boiler_id uuid NOT NULL REFERENCES boilers(id),
+      certificate_type text NOT NULL,
+      certificate_number text NOT NULL,
+      issued_by text NOT NULL,
+      issued_at text NOT NULL,
+      expires_at text NOT NULL,
+      document_url text,
+      status text NOT NULL DEFAULT 'valid',
+      created_at timestamptz NOT NULL DEFAULT now()
+    );
+
+    CREATE TABLE IF NOT EXISTS float_top_up_requests (
+      id uuid PRIMARY KEY,
+      org_id uuid NOT NULL REFERENCES organizations(id),
+      float_id uuid NOT NULL REFERENCES cash_floats(id),
+      requested_by uuid NOT NULL REFERENCES employees(id),
+      amount_minor bigint NOT NULL,
+      currency text NOT NULL DEFAULT 'USD',
+      reason text NOT NULL,
+      status text NOT NULL DEFAULT 'pending',
+      requested_at timestamptz NOT NULL DEFAULT now(),
+      reviewed_by uuid,
+      reviewed_at timestamptz
+    );
+
+    CREATE TABLE IF NOT EXISTS financial_periods (
+      id uuid PRIMARY KEY,
+      org_id uuid NOT NULL REFERENCES organizations(id),
+      period_name text NOT NULL,
+      starts_on text NOT NULL,
+      ends_on text NOT NULL,
+      is_locked boolean NOT NULL DEFAULT false,
+      locked_by uuid,
+      locked_at timestamptz
+    );
+
+    CREATE TABLE IF NOT EXISTS payroll_runs (
+      id uuid PRIMARY KEY,
+      org_id uuid NOT NULL REFERENCES organizations(id),
+      period_month text NOT NULL,
+      status text NOT NULL DEFAULT 'draft',
+      total_gross_minor bigint NOT NULL DEFAULT 0,
+      total_deductions_minor bigint NOT NULL DEFAULT 0,
+      total_net_minor bigint NOT NULL DEFAULT 0,
+      created_at timestamptz NOT NULL DEFAULT now(),
+      approved_by uuid
+    );
+
+    CREATE TABLE IF NOT EXISTS payroll_inputs (
+      id uuid PRIMARY KEY,
+      payroll_run_id uuid NOT NULL REFERENCES payroll_runs(id),
+      employee_id uuid NOT NULL REFERENCES employees(id),
+      days_present int NOT NULL DEFAULT 0,
+      overtime_hours numeric(6,2) NOT NULL DEFAULT 0,
+      leave_days int NOT NULL DEFAULT 0,
+      base_salary_minor bigint NOT NULL DEFAULT 0,
+      overtime_pay_minor bigint NOT NULL DEFAULT 0,
+      advances_deducted_minor bigint NOT NULL DEFAULT 0,
+      reimbursements_minor bigint NOT NULL DEFAULT 0,
+      net_pay_minor bigint NOT NULL DEFAULT 0
+    );
+
+    CREATE TABLE IF NOT EXISTS client_invoices (
+      id uuid PRIMARY KEY,
+      org_id uuid NOT NULL REFERENCES organizations(id),
+      site_id uuid NOT NULL REFERENCES sites(id),
+      invoice_no text NOT NULL,
+      period_start text NOT NULL,
+      period_end text NOT NULL,
+      billing_model text NOT NULL DEFAULT 'flat_monthly',
+      subtotal_minor bigint NOT NULL DEFAULT 0,
+      tax_minor bigint NOT NULL DEFAULT 0,
+      total_minor bigint NOT NULL DEFAULT 0,
+      currency text NOT NULL DEFAULT 'USD',
+      status text NOT NULL DEFAULT 'draft',
+      due_date text NOT NULL,
+      issued_at timestamptz NOT NULL DEFAULT now()
+    );
+
+    CREATE TABLE IF NOT EXISTS boiler_telemetry (
+      id uuid PRIMARY KEY,
+      boiler_id uuid NOT NULL REFERENCES boilers(id),
+      timestamp timestamptz NOT NULL DEFAULT now(),
+      steam_pressure_bar numeric(6,2) NOT NULL,
+      flue_gas_temp_c numeric(6,2) NOT NULL,
+      water_level_pct numeric(5,2) NOT NULL,
+      fuel_feed_kg_h numeric(8,2) NOT NULL,
+      vibration_mm_s numeric(6,2) NOT NULL
+    );
   `);
 
   return {

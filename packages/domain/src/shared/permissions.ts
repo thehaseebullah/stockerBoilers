@@ -10,6 +10,7 @@ export type Permission =
   | "boiler.register"
   | "boiler.move"
   | "boiler.record_reading"
+  | "boiler.maintenance"
   | "boiler.view"
   | "workforce.assign"
   | "workforce.view"
@@ -20,6 +21,8 @@ export type Permission =
   | "cash.request"
   | "cash.issue"
   | "cash.transfer"
+  | "cash.top_up_request"
+  | "cash.top_up_approve"
   | "cash.settle"
   | "cash.view"
   | "fuel.plan"
@@ -31,41 +34,46 @@ export type Permission =
   | "inventory.move"
   | "inventory.view"
   | "ledger.post"
+  | "ledger.period_lock"
+  | "ledger.manual_entry"
   | "ledger.view"
   | "hr.check_in"
   | "hr.roster_manage"
   | "hr.leave_request"
   | "hr.payroll_run"
+  | "client.invoice"
   | "audit.view";
 
 const ROLE_PERMISSIONS: Record<Role, readonly Permission[]> = {
   admin: [
     "site.create", "site.update", "site.change_status", "site.view",
-    "boiler.register", "boiler.move", "boiler.record_reading", "boiler.view",
+    "boiler.register", "boiler.move", "boiler.record_reading", "boiler.maintenance", "boiler.view",
     "workforce.assign", "workforce.view",
     "expense.submit", "expense.approve", "expense.reject", "expense.view",
-    "cash.request", "cash.issue", "cash.transfer", "cash.settle", "cash.view",
+    "cash.request", "cash.issue", "cash.transfer", "cash.top_up_request", "cash.top_up_approve", "cash.settle", "cash.view",
     "fuel.plan", "fuel.dispatch", "fuel.record_arrival", "fuel.verify", "fuel.dispute", "fuel.view",
     "inventory.move", "inventory.view",
-    "ledger.post", "ledger.view",
+    "ledger.post", "ledger.period_lock", "ledger.manual_entry", "ledger.view",
     "hr.check_in", "hr.roster_manage", "hr.leave_request", "hr.payroll_run",
+    "client.invoice",
     "audit.view"
   ],
   ops_manager: [
     "site.create", "site.update", "site.change_status", "site.view",
-    "boiler.register", "boiler.move", "boiler.record_reading", "boiler.view",
+    "boiler.register", "boiler.move", "boiler.record_reading", "boiler.maintenance", "boiler.view",
     "workforce.assign", "workforce.view",
     "expense.view", "cash.view",
     "fuel.plan", "fuel.dispatch", "fuel.record_arrival", "fuel.verify", "fuel.dispute", "fuel.view",
-    "inventory.view", "ledger.view"
+    "inventory.view", "ledger.view", "client.invoice"
   ],
   finance: [
     "site.view", "boiler.view",
     "expense.approve", "expense.reject", "expense.view",
-    "cash.request", "cash.issue", "cash.transfer", "cash.settle", "cash.view",
+    "cash.request", "cash.issue", "cash.transfer", "cash.top_up_request", "cash.top_up_approve", "cash.settle", "cash.view",
     "fuel.verify", "fuel.dispute", "fuel.view",
     "inventory.view",
-    "ledger.post", "ledger.view"
+    "ledger.post", "ledger.period_lock", "ledger.manual_entry", "ledger.view",
+    "client.invoice"
   ],
   hr_manager: [
     "site.view",

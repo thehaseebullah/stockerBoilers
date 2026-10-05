@@ -35,6 +35,7 @@ export default function ConsoleLayout({
         { href: "/cash", label: "Cash Floats", icon: Banknote, color: "text-emerald-400 group-hover:text-emerald-300" },
         { href: "/inventory", label: "Warehouses & Stock", icon: Boxes, color: "text-purple-400 group-hover:text-purple-300" },
         { href: "/ledgers", label: "Double-Entry Ledgers", icon: BookOpen, color: "text-teal-400 group-hover:text-teal-300" },
+        { href: "/reports", label: "Reports & P&L", icon: BookOpen, color: "text-amber-400 group-hover:text-amber-300", badge: "Live" },
       ],
     },
     {

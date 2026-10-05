@@ -15,6 +15,8 @@ import {
   Flame,
   Activity,
   Layers,
+  Globe,
+  Sparkles,
 } from "lucide-react";
 
 interface FlowStep {
@@ -32,6 +34,8 @@ export default function SimulatorPage() {
   const [isOnline, setIsOnline] = useState(true);
   const [gpsMode, setGpsMode] = useState<"inside" | "outside">("inside");
   const [phoneView, setPhoneView] = useState<"supervisor" | "operator">("supervisor");
+  const [presenterMode, setPresenterMode] = useState(false);
+  const [language, setLanguage] = useState<"en" | "ur">("en");
 
   const [flowEvents, setFlowEvents] = useState<FlowStep[]>([
     {
@@ -76,7 +80,7 @@ export default function SimulatorPage() {
           stage: "console",
           status: "dispute",
           timestamp: now,
-          detail: "DEL-FSD-001: 9,450 kg received (-5.5% shortfall). Tolerance 2% exceeded -> AUTO-DISPUTED",
+          detail: "DEL-FSD-001: 9,450 kg received (-5.5% shortfall). Tolerance 2% exceeded -> AUTO-DISPUTED [FUEL-05..08]",
         },
         ...prev,
       ]);
@@ -89,7 +93,42 @@ export default function SimulatorPage() {
           stage: "ledger",
           status: "ok",
           timestamp: now,
-          detail: "$50.00 handed over from Tariq Mahmood to Ali Asghar (derived float balance updated)",
+          detail: "$50.00 handed over from Tariq Mahmood to Ali Asghar (derived float balance updated) [CASH-02]",
+        },
+        {
+          id: `ev-${Date.now() + 1}`,
+          source: "Phone 1 (Supervisor)",
+          event: "cash.top_up_request",
+          stage: "api",
+          status: "ok",
+          timestamp: now,
+          detail: "Float top-up requested: $500.00 for chemical purchase. Waiting finance approval [CASH-08]",
+        },
+        ...prev,
+      ]);
+    } else if (scenarioKey === "maintenance") {
+      setFlowEvents((prev) => [
+        {
+          id: `ev-${Date.now()}`,
+          source: "Console (Ops)",
+          event: "boilers.complete_maintenance",
+          stage: "console",
+          status: "ok",
+          timestamp: now,
+          detail: "BLR-TH-4000 500-hour service completed. Gaskets deducted from inventory movement MNT-INV-8821 [BLR-05, INV-04]",
+        },
+        ...prev,
+      ]);
+    } else if (scenarioKey === "leave_coverage") {
+      setFlowEvents((prev) => [
+        {
+          id: `ev-${Date.now()}`,
+          source: "Phone 2 (Operator)",
+          event: "hr.leave_request",
+          stage: "api",
+          status: "pending",
+          timestamp: now,
+          detail: "Emergency leave requested for 2 days. Coverage engine check: Night Shift has uncovered boiler! [HR-06, HR-07]",
         },
         ...prev,
       ]);
@@ -102,15 +141,38 @@ export default function SimulatorPage() {
           stage: "console",
           status: "ok",
           timestamp: now,
-          detail: "BLR-TH-4000: Steam pressure nominal at 8.4 bar • 137.0 running hours",
+          detail: "BLR-TH-4000: Steam pressure nominal at 8.4 bar • 137.0 running hours [BLR-03]",
         },
         ...prev,
       ]);
     }
   };
 
+  const isRtl = language === "ur";
+
   return (
-    <div className="flex flex-col h-screen bg-[var(--bg)] text-[var(--ink)] overflow-hidden">
+    <div
+      dir={isRtl ? "rtl" : "ltr"}
+      className={`flex flex-col h-screen bg-[var(--bg)] text-[var(--ink)] overflow-hidden ${
+        presenterMode ? "text-base ring-4 ring-amber-500/30" : ""
+      }`}
+    >
+      {/* Presenter Spotlight Banner (SIM-08) */}
+      {presenterMode && (
+        <div className="bg-gradient-to-r from-amber-600 via-orange-600 to-amber-700 text-white px-6 py-2 flex items-center justify-between text-xs font-bold tracking-wide uppercase shadow-lg shrink-0">
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-4 h-4 animate-spin text-amber-200" />
+            <span>PRESENTER MODE ACTIVE — High-Contrast Showcase for Operations & Board Review</span>
+          </div>
+          <button
+            onClick={() => setPresenterMode(false)}
+            className="px-3 py-0.5 rounded-full bg-black/30 hover:bg-black/50 text-white text-[11px] font-mono transition-all"
+          >
+            Exit Presenter
+          </button>
+        </div>
+      )}
+
       {/* Simulator Master Header */}
       <header className="h-16 border-b border-[var(--line)] bg-[var(--surface)] px-6 flex items-center justify-between shrink-0 shadow-xs z-10">
         <div className="flex items-center gap-4">
@@ -120,21 +182,23 @@ export default function SimulatorPage() {
             </div>
             <div>
               <div className="font-extrabold text-base tracking-tight font-[family-name:var(--font-display)] text-[var(--ink)] flex items-center gap-2">
-                <span>STOKER SIMULATOR</span>
+                <span>{language === "ur" ? "سٹوکر سمولیٹر" : "STOKER SIMULATOR"}</span>
                 <span className="text-[10px] px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-400 border border-purple-500/30 font-mono font-bold">
-                  STUDIO
+                  STUDIO PRO
                 </span>
               </div>
-              <div className="text-[10px] text-[var(--ink-3)]">Dual Mobile Viewport & Reactive Flow Engine</div>
+              <div className="text-[10px] text-[var(--ink-3)]">
+                {language === "ur" ? "مکمل ملٹی ڈیوائس اور ڈیٹا فلو کنٹرول" : "Dual Mobile Viewport & Reactive Flow Engine"}
+              </div>
             </div>
           </Link>
 
-          {/* Scenario Trigger Bar */}
-          <div className="hidden md:flex items-center gap-2 pl-4 border-l border-[var(--line)]">
-            <div className="flex items-center gap-1.5 p-1 bg-[var(--surface-sunk)] border border-[var(--line)] rounded-xl text-xs font-semibold">
+          {/* Scenario Trigger Bar (SIM-06) */}
+          <div className="hidden lg:flex items-center gap-1.5 pl-4 border-l border-[var(--line)]">
+            <div className="flex items-center gap-1 p-1 bg-[var(--surface-sunk)] border border-[var(--line)] rounded-xl text-xs font-semibold">
               <button
                 onClick={() => runScenario("normal_day")}
-                className={`px-3 py-1 rounded-lg transition-all ${
+                className={`px-2.5 py-1 rounded-lg transition-all ${
                   activeScenario === "normal_day"
                     ? "bg-emerald-500 text-white shadow-xs"
                     : "text-[var(--ink-3)] hover:text-[var(--ink)]"
@@ -144,23 +208,43 @@ export default function SimulatorPage() {
               </button>
               <button
                 onClick={() => runScenario("short_fuel")}
-                className={`px-3 py-1 rounded-lg transition-all ${
+                className={`px-2.5 py-1 rounded-lg transition-all ${
                   activeScenario === "short_fuel"
                     ? "bg-rose-500 text-white shadow-xs"
                     : "text-[var(--ink-3)] hover:text-[var(--ink)]"
                 }`}
               >
-                2. Fuel Dispute (&gt;2%)
+                2. Fuel Dispute
               </button>
               <button
                 onClick={() => runScenario("cash_handover")}
-                className={`px-3 py-1 rounded-lg transition-all ${
+                className={`px-2.5 py-1 rounded-lg transition-all ${
                   activeScenario === "cash_handover"
                     ? "bg-sky-500 text-white shadow-xs"
                     : "text-[var(--ink-3)] hover:text-[var(--ink)]"
                 }`}
               >
-                3. Float Transfer
+                3. Float Top-Up
+              </button>
+              <button
+                onClick={() => runScenario("maintenance")}
+                className={`px-2.5 py-1 rounded-lg transition-all ${
+                  activeScenario === "maintenance"
+                    ? "bg-amber-500 text-white shadow-xs"
+                    : "text-[var(--ink-3)] hover:text-[var(--ink)]"
+                }`}
+              >
+                4. Maintenance
+              </button>
+              <button
+                onClick={() => runScenario("leave_coverage")}
+                className={`px-2.5 py-1 rounded-lg transition-all ${
+                  activeScenario === "leave_coverage"
+                    ? "bg-purple-500 text-white shadow-xs"
+                    : "text-[var(--ink-3)] hover:text-[var(--ink)]"
+                }`}
+              >
+                5. Leave Coverage
               </button>
             </div>
 
@@ -174,8 +258,31 @@ export default function SimulatorPage() {
           </div>
         </div>
 
-        {/* Virtual Hardware Controls */}
-        <div className="flex items-center gap-3 text-xs font-medium">
+        {/* Virtual Hardware & Studio Controls */}
+        <div className="flex items-center gap-2.5 text-xs font-medium">
+          {/* Presenter Mode Toggle (SIM-08) */}
+          <button
+            onClick={() => setPresenterMode(!presenterMode)}
+            className={`flex items-center gap-1.5 px-3 py-1 rounded-full border transition-all ${
+              presenterMode
+                ? "bg-amber-500/20 text-amber-300 border-amber-500/40"
+                : "bg-[var(--surface-sunk)] text-[var(--ink-2)] border-[var(--line)] hover:border-amber-500/40"
+            }`}
+          >
+            <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+            <span className="font-semibold">{presenterMode ? "Presenter On" : "Presenter"}</span>
+          </button>
+
+          {/* i18n & RTL Language Switcher */}
+          <button
+            onClick={() => setLanguage(language === "en" ? "ur" : "en")}
+            className="flex items-center gap-1.5 px-3 py-1 rounded-full border border-[var(--line)] bg-[var(--surface-sunk)] text-[var(--ink-2)] hover:border-sky-500/40 transition-colors"
+          >
+            <Globe className="w-3.5 h-3.5 text-sky-400" />
+            <span className="font-mono text-[11px] font-bold">{language === "en" ? "EN / اردو" : "اردو (Urdu)"}</span>
+          </button>
+
+          {/* Network Switcher */}
           <button
             onClick={() => setIsOnline(!isOnline)}
             className={`flex items-center gap-1.5 px-3 py-1 rounded-full border transition-all ${
@@ -188,12 +295,13 @@ export default function SimulatorPage() {
             <span className="font-mono text-[11px] font-semibold">{isOnline ? "Net: Online" : "Net: Offline"}</span>
           </button>
 
+          {/* GPS Simulation */}
           <button
             onClick={() => setGpsMode(gpsMode === "inside" ? "outside" : "inside")}
             className="flex items-center gap-1.5 px-3 py-1 rounded-full border border-[var(--line)] bg-[var(--surface-sunk)] text-[var(--ink-2)] hover:border-sky-500/40 transition-colors"
           >
             <MapPin className="w-3.5 h-3.5 text-sky-400" />
-            <span className="font-mono text-[11px]">{gpsMode === "inside" ? "GPS: 145m (Valid)" : "GPS: 650m (Breach)"}</span>
+            <span className="font-mono text-[11px]">{gpsMode === "inside" ? "GPS: 145m" : "GPS: 650m"}</span>
           </button>
 
           <Link

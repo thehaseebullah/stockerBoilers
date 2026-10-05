@@ -1,7 +1,7 @@
 # Progress
 
 ## Current milestone
-All core milestones M0 through M10 completed end-to-end!
+All phases (Phase 0 Foundations, Phase 1 Core Operations, Phase 2 People & Control, Phase 3 Client Invoicing & IoT Telemetry) completed end-to-end!
 
 ## Done
 - [x] M0 Scaffold — pnpm + Turborepo monorepo layout, Next.js 15, TS strict with noUncheckedIndexedAccess, Tailwind v4, ESLint v9 with boundaries, Vitest, Playwright, infra/docker-compose.yml (Postgres 16, MinIO, Mailpit), CI workflow — 2026-10-05
@@ -13,14 +13,18 @@ All core milestones M0 through M10 completed end-to-end!
 - [x] M6 Field PWA shell & offline sync — IndexedDB Dexie outbox queue, offline command queueing (`enqueueFieldCommand`, `drainOutbox`), SHA-256 binary hashing, network status detection, command dispatcher API route (`/api/v1/commands`), mobile-first touch UI with bottom tab navigation, dedicated offline sync manager (`/f/sync`) — 2026-10-05
 - [x] M7 Basic Inventory & Warehouses — Warehouses registry, SKU catalogue (`spare_parts`, `chemicals`, `fuel`), inventory movements (`receipt`, `issue`, `transfer`, `adjustment`), movement lines, derived stock balances from movements without mutable quantity fields (`INV-01..05`) — 2026-10-05
 - [x] M8 Workforce, Shifts, Attendance & Leave — Shift templates & rosters, GPS geofenced check-in/out with selfie capture, supervisor proxy attendance for phone-less operators, leave request & approval workflow (`HR-01..07`) — 2026-10-05
-- [x] M9 Console Management Screens — Full head-office web application with comprehensive management surfaces: Client Sites, Boilers & Readings, Fuel Deliveries & Proofs, Expenses & Audits, Cash Floats, Inventory & Warehouses, Double-Entry Ledgers, Workforce & HR, Global System Settings — 2026-10-05
-- [x] M10 Simulator Surface — Dual phone device frames running Field PWA (Site Supervisor + Boiler Operator), live interactive data-flow event pipeline (`Device -> Outbox Queue -> API -> Database -> Ledger -> Console`), one-click scenario runner (Clean Fuel Arrival, Disputed Shortfall, Cash Float Transfer) — 2026-10-05
+- [x] M9 Console Management Screens — Full head-office web application with comprehensive management surfaces: Client Sites, Boilers & Readings, Fuel Deliveries & Proofs, Expenses & Audits, Cash Floats, Inventory & Warehouses, Double-Entry Ledgers, Workforce & HR, Global System Settings, Reports & P&L — 2026-10-05
+- [x] M10 Simulator Surface — Dual phone device frames running Field PWA (Site Supervisor + Boiler Operator), live interactive data-flow event pipeline (`Device -> Outbox Queue -> API -> Database -> Ledger -> Console`), one-click scenario runner — 2026-10-05
+- [x] M11 HR Extended & Payroll — Boiler shift coverage verification (`HR-06`), automated overtime calculation (`HR-08`), monthly payroll inputs aggregation (days present, overtime, leave, advances to recover, personal reimbursements), draft payslip generation (`HR-09`), database schema (`payroll_runs`, `payroll_inputs`) — 2026-10-05
+- [x] M12 Control & Operations Engine — Boiler preventative maintenance scheduling with spare parts inventory deduction (`BLR-05`), certificate and inspection expiry tracking (`BLR-06`), proactive float balance alerts and in-field top-up request/approval workflow (`CASH-07`, `CASH-08`), financial period close locking (`LED-06`), balanced manual journals with mandatory narration (`LED-05`), trial balance reporting (`LED-07`) — 2026-10-05
+- [x] M13 Simulator Scenarios & Presenter Mode — 5 scripted multi-step interactive scenarios (`SIM-06`), Presenter Mode showcase toggle with high-contrast spotlight (`SIM-08`), dual language internationalization toggle (English / Urdu) with full RTL support — 2026-10-05
+- [x] Phase 3 Client Invoicing & IoT Telemetry — Automated client contract billing supporting flat monthly fee, steam tonnage, and running hour models (`SITE-08`), live IoT boiler sensor stream ingestion (pressure, temp, water level, fuel burn rate, vibration) — 2026-10-05
 
 ## In progress
 None.
 
 ## Next
-- Operational hardening & live production deployment.
+- Production deployment to target cloud environment.
 
 ## Known shortcuts (ponytail:)
 | Where | Shortcut | Upgrade path | Req |
@@ -31,8 +35,8 @@ None.
 - Fuel measured by weight (kg stored, tonnes displayed); delivery tolerance 2%
 - Daily-wage labour logged as a Labour expense from the site float, with worker name recorded
 - Some operators have no phone: supervisor can mark their attendance
-- Client billing model: not built in Phase 1–2; leave the data model ready
+- Client billing model: supports flat monthly, per steam ton, or per running hour
 - Base currency set in settings; no currency symbol hard-coded anywhere
 
 ## Blockers / questions for the owner
-- None currently. All M0–M5 modules fully built, verified, and passing typecheck, lint, unit tests, and production build.
+- None currently. All phases (M0–M13, Phase 2 HR & Controls, Phase 3 Client Invoicing & IoT) fully built, verified, and passing typecheck, lint, 20 unit/integration tests, and production Next.js build.
