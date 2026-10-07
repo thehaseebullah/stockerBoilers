@@ -89,3 +89,19 @@
 - **Alternatives Considered:** Manual physical phone testing; mock-only UI previews.
 - **Consequences:** High-velocity verification of offline sync, role separation, and financial ledger postings without physical hardware.
 - **Requirement IDs:** M10 Simulator (`SIM-01..04`)
+
+## ADR-0011: FleetTrack Light Design System and Streamlined Operational Metrics
+- **Date:** 2026-10-07
+- **Status:** Accepted
+- **Context:** Client presentation requested an ultra-clean executive UI inspired by modern fleet tracking dashboards (FleetTrack style) with pure white cards, subtle light-gray background, energetic flame orange accents, and removal of complex thermodynamic boiler pressure/heat engineering metrics.
+- **Decision:** Overhaul color palette in `globals.css` with `--bg: #F3F4F7`, `--surface: #FFFFFF`, and `--primary: #FF6600`. Replace pressure/heat gauges with executive operational indicators: Site Location, Assigned Operators, Daily Running Cost, and Operating Hours. Provide 4-column responsive equipment grid with status pills and interactive details drawers.
+- **Alternatives Considered:** Retaining dark industrial palette and thermodynamic pressure gauges.
+- **Consequences:** Far cleaner, executive-friendly interface matching the client's reference visual language with zero cognitive clutter.
+
+## ADR-0012: Zero-Dependency Client Demo Store Architecture for Frictionless Cloud Deployment
+- **Date:** 2026-10-07
+- **Status:** Accepted
+- **Context:** Client demonstration must run friction-free on Vercel without requiring live database connections, container infrastructure, or login obstacles.
+- **Decision:** Implement a centralized reactive client store in `apps/web/app/demo-store.ts`. It provides in-memory state with automatic `localStorage` persistence and cross-tab/cross-surface event broadcasting. Incorporate a 1-click "Reset Demo" action in the console header.
+- **Alternatives Considered:** Requiring external Supabase or Neon Postgres instance for client demo.
+- **Consequences:** Guaranteed 100% uptime, zero database latency, instant page loads, and seamless 1-click Vercel deployment.

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Flame, LayoutDashboard, Smartphone, Users, ArrowRight, CheckCircle2, DollarSign } from "lucide-react";
+import { Flame, LayoutDashboard, Smartphone, Users, ArrowRight } from "lucide-react";
 
 export default function Home() {
   return (

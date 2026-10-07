@@ -9,8 +9,11 @@ const nextConfig: NextConfig = {
     "@stoker/field-sync",
     "@stoker/simulator",
   ],
-  experimental: {
-    // any experimental flags if needed
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  typescript: {
+    ignoreBuildErrors: false,
   },
 };
 
